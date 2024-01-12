@@ -1,3 +1,4 @@
+/*
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -106,4 +107,47 @@ void ApplicationOnDisk()
         }
         cout << ApplicationVersions[i] << " " << DownloadStatus << endl;
     }
+}
+*/
+
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include "picosha2.h"
+
+std::string calculateSHA256(const std::string& filename) {
+    std::ifstream file(filename, std::ios::binary);
+    if (!file.is_open()) {
+        std::cerr << "Error opening file: " << filename << std::endl;
+        return "";
+    }
+
+    picosha2::hash256 hasher = picosha2::hash256();
+
+    const size_t bufferSize = 4096;
+    char buffer[bufferSize];
+
+    while (file.read(buffer, bufferSize)) {
+        hasher.process(buffer, buffer + file.gcount());
+    }
+
+    // Process the last chunk (if any)
+    hasher.process(buffer, buffer + file.gcount());
+
+
+    // Convert the hash to a hex string
+    std::string result = picosha2::bytes_to_hex_string(hash);
+
+    return result;
+}
+
+int main() {
+    std::string filename = "graph.txt";
+    std::string sha256Hash = calculateSHA256(filename);
+
+    if (!sha256Hash.empty()) {
+        std::cout << "SHA-256 Hash of " << filename << ": " << sha256Hash << std::endl;
+    }
+
+    return 0;
 }
